@@ -1,0 +1,181 @@
+---
+title: "Task#1(Sparks Foundation)"
+author: "Ali Raza"
+date: "9/3/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+## Linear Regression By using R
+In this section we will see how the R language can be used to implement regression functions. We will start with simple linear regression involving two variables.
+
+## Simple Linear Regression
+In this linear regression task, we are able to expect the proportion of marks that a student is anticipated to score based upon the variety of hours they studied. That is an easy linear regression venture as it involves simply variables.
+
+#### Set Directory for reading the Data sets
+
+To get the current the directory: 
+```{r echo=TRUE}
+getwd()
+```
+
+
+To set the directory where I save the data sets:
+```{r echo=TRUE}
+setwd("C:/Users/Ali Raza/Desktop/Sparks Foundation/Task#1")
+```
+
+## Data Sets
+Read the data sets that given for solving the Problem:
+The given data sets is based on student scores.
+
+```{r echo=TRUE}
+s_scores <- read.csv("student_scores - student_scores.csv")
+```
+
+#### To Inspect the Data Sets
+To View the Upper Row of Given Data Sets
+```{r echo=TRUE}
+head(s_scores)
+```
+
+To check the detail of Data Sets
+
+```{r echo=TRUE}
+summary(s_scores)
+```
+
+## Loading required R packages For solving the Problem
+
+* Load required packages:
+    + ggplot2: for create plot
+    + tidyverse for data manipulation and visualization
+    + ggpubr: creates easily a publication ready-plot
+        - Installed ggrepel for used ggpubr
+```{r eval = FALSE}
+library(ggplot2)
+library(tidyverse)
+library(ggpubr)
+```
+
+        
+## Visualization
+
+The column names that I used for plotting or visualizing is 
+`r colnames(s_scores)`
+
+### Scatter plot
+
+Create Scatter plot for the Hours and Scores
+
+```{r echo = FALSE}
+library(ggplot2)
+library(ggpubr)
+ggplot(s_scores, aes(x = Hours, y = Scores)) +
+    geom_point() +
+    ggtitle("Hours VS Scores") +
+    theme_pubr() +
+    theme(legend.title = element_text(size = 9, face = "bold")
+        )
+```
+
+### Scatter Plot with Regression Line
+
+Create Scatter Plot with Regression Line for the Hours and Scores
+
+```{r echo=FALSE}
+library(ggplot2)
+library(ggpubr)
+ggplot(s_scores, aes(x = Hours, y = Scores))+
+  geom_point() + 
+  ggtitle("Hours Vs Scores") +
+  stat_smooth() +
+  theme_pubr() +
+  theme(legend.title = element_text(size = 9, face = "bold")
+        )
+```
+
+The graph above shows a linearly growing relationship among the Hours and the scores variables. This is a superb factor, because one important assumption of linear regression is that the relationship between the final results and predictor variables is linear and additive.
+
+**So the Graph shows the positive relation.**
+
+### Coorelation
+
+The Correlation coefficient between Hours and Scores of Students.
+```{r echo=TRUE}
+cor(s_scores$Scores, s_scores$Hours)
+```
+
+The correlation coefficient measures the level of the association between two variables x and y.
+
+Its value ranges between -1 (perfect negative correlation: when x increases, y decreases) and +1 (perfect positive correlation: when x increases, y increases).
+
+A value closer to 0 suggests a weak relationship between the variables. A low correlation (-0.2 < x < 0.2) probably suggests that much of variation of the outcome variable (y) is not explained by the predictor (x). In such case, we should probably look for better predictor variables.
+
+**In our Task, the correlation coefficient is large enough, so we can continue by building a linear model of y as a function of x.**
+
+## Linear Regression Model
+The simple linear regression tries to find the best line to predict Scores on the basis of Hours.
+
+The linear model equation can be written as follow: **Scores = b0 + b1 x Hours**
+
+The R function **lm()** can be used to determine the beta coefficients of the linear model:
+
+```{r echo=TRUE}
+linear_model <- lm(Scores~Hours, data = s_scores)
+linear_model
+```
+
+The Result tell us about the **intercept** and **beta coefficient** of the **Hours**.
+
+### Plotting
+Display the Scatter Plot with Simple Linear Regression Line.
+```{r echo=FALSE}
+library(ggplot2)
+library(ggpubr)
+ggplot(s_scores, aes(x = Hours, y = Scores))+
+  geom_point() + 
+  ggtitle("Hours Vs Scores") +
+  stat_smooth(method = lm) +
+  theme_pubr() +
+  theme(legend.title = element_text(size = 9, face = "bold"))
+```
+
+### Summary of Model
+I displaying the statistical summary of the model.
+
+```{r echo=TRUE}
+summary(linear_model)
+```
+
+The summary outputs shows 6 components, including:
+* **Call**. Shows the function call used to compute the regression model.
+* **Residuals**. Provide a quick view of the distribution of the residuals, which by definition have a mean zero. Therefore, the median should not be far from zero, and the minimum and maximum should be roughly equal in absolute value
+* **Coefficients**. Shows the regression beta coefficients and their statistical significance. Predictor variables, that are significantly associated to the outcome variable, are marked by stars.
+* **Residual standard error (RSE)**, **R-squared (R2)** and the **F-statistic** are metrics that are used to check how well the model fits to our data.
+
+### Coefficients significance
+```{r echo=TRUE}
+confint(linear_model)
+```
+
+### Check the Model
+For check the model accuracy, I measure the percentage in predicting.
+```{r echo=TRUE}
+sigma(linear_model)*100/mean(s_scores$Scores)
+```
+**So the error percentage is `r sigma(linear_model)*100/mean(s_scores$Scores)`**
+
+## Make Prediction
+Predict the score on 9.25 hours, according to given problems or task.
+
+```{r echo=TRUE}
+predict(linear_model, data.frame(Hours = 9.25))
+```
